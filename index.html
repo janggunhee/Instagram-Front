@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Instagram</title>
+  <script src="js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+  <script>
+  $.ajax({
+    method: 'GET',
+    url: 'http://localpost:8000/api/post/',
+  })
+  .done(function(response) {
+    console.log('Done!');
+    console.log(response);
+  })
+  .fail(function(response) {
+    console.log('Fail!');
+    console.log(response);
+  });
+  </script>
+</body>
+</html>
