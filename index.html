@@ -1,27 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Instagram</title>
-  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body>
-
-  <script>
+  <button onclick="getPost()">포스트 가져오자</button>
+  <div id="post-container"></div>
+<script>
+// python -m http.server 3001
+function getPost() {
   $.ajax({
     method: 'GET',
-    url: 'http://localpost:8000/api/post/',
+    url: 'http://localhost:8000/api/post/',
   })
-  .done(function(response) {
+  .done(function(data) {
     console.log('Done!');
-    console.log(response);
+    for (var i = 0; i < data.length; i++) {
+      $('#post-container').prepend('<img width="100%" src="http://localhost:8000' + data[i].photo + '">')
+    }
+
   })
-  .fail(function(response) {
+  .fail(function(data) {
     console.log('Fail!');
-    console.log(response);
+    console.log(data);
   });
-  </script>
+}
+
+</script>
 </body>
 </html>
