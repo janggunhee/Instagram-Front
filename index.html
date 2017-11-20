@@ -8,27 +8,92 @@
   <script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body>
+  <div>
+    <button onclick="fbLogin()" class="btn-facebook">페이스북 로그인</button>
+  </div>
+
   <button onclick="getPost()">포스트 가져오자</button>
   <div id="post-container"></div>
-<script>
-// python -m http.server 3001
-function getPost() {
-  $.ajax({
-    method: 'GET',
-    url: 'http://localhost:8000/api/post/',
-  })
-  .done(function(data) {
-    console.log('Done!');
-    for (var i = 0; i < data.length; i++) {
-      $('#post-container').prepend('<img width="100%" src="http://localhost:8000' + data[i].photo + '">')
-    }
+  <script>
+  /* Facebook */
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
 
-  })
-  .fail(function(data) {
-    console.log('Fail!');
-    console.log(data);
-  });
-}
+  // Init SDK (FB)
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '146644122735188',
+      cookie     : true,  // enable cookies to allow the server to access
+      // the session
+      xfbml      : true,  // parse social plugins on this page
+      version    : 'v2.8' // use graph api version 2.8
+    });
+  };
+
+  /* Fucntions */
+  function fbLogin() {
+    // Login check
+    FB.getLoginStatus(function (response) {
+      if (response.status === 'connected') {
+        // 만약 사용자가 페이스북에 로그인 했으며
+        // app도 승인한 상태일 경우
+        // axios (HTTP library)
+        console.log(response);
+
+        // response의 내용을 사용해서
+        // localhost:8000/api/member/facebook-login/ URL에 POST요청하기
+        // jQuery사용 ($.ajax)
+        $.ajax({
+          method: 'POST',
+          url: 'http://localhost:8000/api/member/facebook-login/',
+          data: {
+            access_token: response.authResponse.accessToken,
+            facebook_user_id: response.authResponse.userID,
+          }
+        })
+        .done(function (data) {
+          console.log('DRF FacebookLogin API Success');
+          console.log(data);
+        })
+        .fail(function (data) {
+          console.log('DRF FacebookLogin API Fail');
+          console.log(data);
+        });
+      } else {
+        // 페이스북에 로그인 하지 않았거나 app을 승인하지 않은 경우
+        // 로그인을 실행
+        FB.login(function (response) {
+          // 실행 이후
+          console.log(response);
+        });
+      }
+    });
+  }
+
+  function getPost() {
+    $.ajax({
+      method: 'GET',
+      url: 'http://localhost:8000/api/post/',
+    })
+    .done(function(data) {
+      console.log('Done!');
+      console.log(data);
+      for (var i = 0; i < data.length; i++) {
+        $('#post-container').prepend('<img src="' + data[i].photo + '" style="max-width: 100%;">')
+      }
+
+    })
+    .fail(function(data) {
+      console.log('Fail!');
+      console.log(data);
+    });
+  }
 
 </script>
 </body>
